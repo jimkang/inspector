@@ -176,6 +176,12 @@ function rejected(input, name) {
   (new Inspector(demos.appendChild(document.createElement('div')))).rejected(input, name);
 }
 
+document.addEventListener('itemclick', onClickItem);
+
+function onClickItem(event) {
+  console.log('Clicked:', event, event.detail.name, event.detail.value);
+}
+
 class A { b() {} }
 A.prototype.hi = 'hi';
 fixed([1, 2, 3, [2, 3]], 'b')

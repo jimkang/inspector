@@ -1,5 +1,6 @@
-import {format} from "isoformat";
+// import {format} from "isoformat";
 
 export default function formatDate(date) {
-  return format(date, "Invalid Date");
+  // return format(date, "Invalid Date");
+  return date.toISOString();
 }

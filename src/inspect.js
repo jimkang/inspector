@@ -36,11 +36,26 @@ export function inspect(value, shallow, expand, name, proto) {
     }
   }
   const span = document.createElement("span");
-  if (name) span.appendChild(inspectName(name));
+  if (name) {
+    let label = span.appendChild(inspectName(name));
+    label.addEventListener('click', onItemClick);
+  }
   const n = span.appendChild(document.createElement("span"));
   n.className = `observablehq--${type}`;
   n.textContent = value;
+  n.addEventListener('click', onItemClick);
   return span;
+
+  function onItemClick(e) {
+    var itemClickEvent = new CustomEvent(
+      'itemclick',
+      {
+        detail: { clickEvent: e, name, value }
+      }
+    );
+
+    document.dispatchEvent(itemClickEvent);
+  }
 }
 
 export function replace(spanOld, spanNew) {
