@@ -18,7 +18,8 @@ export default function inspectExpanded(object, _, name, proto) {
     if (object instanceof object.constructor) {
       tag = `Map(${object.size})`;
       fields = iterateMap;
-    } else { // avoid incompatible receiver error for prototype
+    } else {
+      // avoid incompatible receiver error for prototype
       tag = "Map()";
       fields = iterateObject;
     }
@@ -26,7 +27,8 @@ export default function inspectExpanded(object, _, name, proto) {
     if (object instanceof object.constructor) {
       tag = `Set(${object.size})`;
       fields = iterateSet;
-    } else { // avoid incompatible receiver error for prototype
+    } else {
+      // avoid incompatible receiver error for prototype
       tag = "Set()";
       fields = iterateObject;
     }
@@ -39,8 +41,8 @@ export default function inspectExpanded(object, _, name, proto) {
     fields = n.arrayish
       ? iterateImArray
       : n.setish
-      ? iterateImSet
-      : iterateImObject;
+        ? iterateImSet
+        : iterateImObject;
   } else if (proto) {
     tag = tagof(object);
     fields = iterateProto;
@@ -59,9 +61,14 @@ export default function inspectExpanded(object, _, name, proto) {
     <path d='M4 7L0 1h8z' fill='currentColor' />
   </svg>`;
   a.appendChild(document.createTextNode(`${tag}${arrayish ? " [" : " {"}`));
-  a.addEventListener("mouseup", function(event) {
+  a.addEventListener("mouseup", function (event) {
     event.stopPropagation();
     replace(span, inspectCollapsed(object, null, name, proto));
+
+    var itemClickEvent = new CustomEvent("itemclick", {
+      detail: {clickEvent: event, name, value: object},
+    });
+    document.dispatchEvent(itemClickEvent);
   });
 
   fields = fields(object);
@@ -74,7 +81,7 @@ export default function inspectExpanded(object, _, name, proto) {
     a.className = "observablehq--field";
     a.style.display = "block";
     a.appendChild(document.createTextNode(`  … more`));
-    a.addEventListener("mouseup", function(event) {
+    a.addEventListener("mouseup", function (event) {
       event.stopPropagation();
       span.insertBefore(next.value, span.lastChild.previousSibling);
       for (let i = 0; !(next = fields.next()).done && i < 19; ++i) {
@@ -82,6 +89,11 @@ export default function inspectExpanded(object, _, name, proto) {
       }
       if (next.done) span.removeChild(span.lastChild.previousSibling);
       dispatch(span, "load");
+
+      var itemClickEvent = new CustomEvent("itemclick", {
+        detail: {clickEvent: event, name, value: object},
+      });
+      document.dispatchEvent(itemClickEvent);
     });
   }
 
@@ -125,7 +137,7 @@ function* iterateArray(array) {
     yield formatField(
       formatSymbol(symbol),
       valueof(array, symbol),
-      "observablehq--symbol"
+      "observablehq--symbol",
     );
   }
 }
@@ -145,7 +157,7 @@ function* iterateProto(object) {
     yield formatField(
       formatSymbol(symbol),
       valueof(object, symbol),
-      "observablehq--symbol"
+      "observablehq--symbol",
     );
   }
 
@@ -165,7 +177,7 @@ function* iterateObject(object) {
     yield formatField(
       formatSymbol(symbol),
       valueof(object, symbol),
-      "observablehq--symbol"
+      "observablehq--symbol",
     );
   }
 

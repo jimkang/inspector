@@ -24,7 +24,8 @@ export default function inspectCollapsed(object, shallow, name, proto) {
     if (object instanceof object.constructor) {
       tag = `Map(${object.size})`;
       fields = iterateMap;
-    } else { // avoid incompatible receiver error for prototype
+    } else {
+      // avoid incompatible receiver error for prototype
       tag = "Map()";
       fields = iterateObject;
     }
@@ -32,7 +33,8 @@ export default function inspectCollapsed(object, shallow, name, proto) {
     if (object instanceof object.constructor) {
       tag = `Set(${object.size})`;
       fields = iterateSet;
-    } else { // avoid incompatible receiver error for prototype
+    } else {
+      // avoid incompatible receiver error for prototype
       tag = "Set()";
       fields = iterateObject;
     }
@@ -40,9 +42,13 @@ export default function inspectCollapsed(object, shallow, name, proto) {
     tag = `${object.constructor.name}(${object.length})`;
     fields = iterateArray;
   } else if ((n = immutableName(object))) {
-    tag = `Immutable.${n.name}${n.name === 'Record' ? '' : `(${object.size})`}`;
+    tag = `Immutable.${n.name}${n.name === "Record" ? "" : `(${object.size})`}`;
     arrayish = n.arrayish;
-    fields = n.arrayish ? iterateImArray : n.setish ? iterateImSet : iterateImObject;
+    fields = n.arrayish
+      ? iterateImArray
+      : n.setish
+        ? iterateImSet
+        : iterateImObject;
   } else {
     tag = tagof(object);
     fields = iterateObject;
@@ -55,10 +61,15 @@ export default function inspectCollapsed(object, shallow, name, proto) {
       span.appendChild(inspectName(name));
     }
     span.appendChild(document.createTextNode(tag));
-    span.addEventListener("mouseup", function(event) {
+    span.addEventListener("mouseup", function (event) {
       if (hasSelection(span)) return;
       event.stopPropagation();
       replace(span, inspectCollapsed(object));
+
+      var itemClickEvent = new CustomEvent("itemclick", {
+        detail: {clickEvent: event, name, value: object},
+      });
+      document.dispatchEvent(itemClickEvent);
     });
     return span;
   }
@@ -73,11 +84,19 @@ export default function inspectCollapsed(object, shallow, name, proto) {
     <path d='M7 4L1 8V0z' fill='currentColor' />
   </svg>`;
   a.appendChild(document.createTextNode(`${tag}${arrayish ? " [" : " {"}`));
-  span.addEventListener("mouseup", function(event) {
-    if (hasSelection(span)) return;
-    event.stopPropagation();
-    replace(span, inspectExpanded(object, null, name, proto));
-  }, true);
+  span.addEventListener(
+    "mouseup",
+    function (event) {
+      if (hasSelection(span)) return;
+      event.stopPropagation();
+      replace(span, inspectExpanded(object, null, name, proto));
+      var itemClickEvent = new CustomEvent("itemclick", {
+        detail: {clickEvent: event, name, value: object},
+      });
+      document.dispatchEvent(itemClickEvent);
+    },
+    true,
+  );
 
   fields = fields(object);
   for (let i = 0; !(next = fields.next()).done && i < 20; ++i) {
@@ -112,7 +131,8 @@ function* iterateImSet(set) {
 }
 
 function* iterateImArray(array) {
-  let i0 = -1, i1 = 0;
+  let i0 = -1,
+    i1 = 0;
   for (const n = array.size; i1 < n; ++i1) {
     if (i1 > i0 + 1) yield formatEmpty(i1 - i0 - 1);
     yield inspect(array.get(i1), true);
@@ -122,7 +142,8 @@ function* iterateImArray(array) {
 }
 
 function* iterateArray(array) {
-  let i0 = -1, i1 = 0;
+  let i0 = -1,
+    i1 = 0;
   for (const n = array.length; i1 < n; ++i1) {
     if (i1 in array) {
       if (i1 > i0 + 1) yield formatEmpty(i1 - i0 - 1);
@@ -137,7 +158,11 @@ function* iterateArray(array) {
     }
   }
   for (const symbol of symbolsof(array)) {
-    yield formatField(formatSymbol(symbol), valueof(array, symbol), "observablehq--symbol");
+    yield formatField(
+      formatSymbol(symbol),
+      valueof(array, symbol),
+      "observablehq--symbol",
+    );
   }
 }
 
@@ -148,7 +173,11 @@ function* iterateObject(object) {
     }
   }
   for (const symbol of symbolsof(object)) {
-    yield formatField(formatSymbol(symbol), valueof(object, symbol), "observablehq--symbol");
+    yield formatField(
+      formatSymbol(symbol),
+      valueof(object, symbol),
+      "observablehq--symbol",
+    );
   }
 }
 
