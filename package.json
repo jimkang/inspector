@@ -1,6 +1,6 @@
 {
-  "name": "@observablehq/inspector",
-  "version": "5.0.1",
+  "name": "inspector-with-events",
+  "version": "5.0.2",
   "author": {
     "name": "Observable, Inc.",
     "url": "https://observablehq.com"
