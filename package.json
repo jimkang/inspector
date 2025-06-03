@@ -7,7 +7,7 @@
   },
   "license": "ISC",
   "type": "module",
-  "main": "src/index.js",
+  "main": "dist/inspector.js",
   "module": "src/index.js",
   "jsdelivr": "dist/inspector.js",
   "unpkg": "dist/inspector.js",
